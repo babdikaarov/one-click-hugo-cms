@@ -23,11 +23,37 @@ CMS.registerEventListener({
    handler: async ({ author, entry }) => {
       console.log("start 5 sec");
 
-      // Return a promise that resolves after 5 seconds
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      // URL from the entry data (replace 'url' with the actual field name)
+      const url = "https://kashkaldak.edu.kg";
 
-      // Log the data after the delay
-      console.log(JSON.stringify({ author, data: entry.get("data") }));
+      try {
+         // Fetch the HTML content from the URL
+         const response = await fetch(url);
+         if (!response.ok) {
+            throw new Error(`Failed to fetch HTML from ${url}`);
+         }
+
+         // Convert the response to text
+         const html = await response.text();
+
+         // Parse the HTML and extract Open Graph data
+         const parser = new DOMParser();
+         const doc = parser.parseFromString(html, "text/html");
+
+         const ogData = {
+            title: doc.querySelector('meta[property="og:title"]')?.content || "No title",
+            description: doc.querySelector('meta[property="og:description"]')?.content || "No description",
+            image: doc.querySelector('meta[property="og:image"]')?.content || "No image",
+         };
+
+         // Log the Open Graph data
+         console.log("Open Graph Data:", JSON.stringify(ogData));
+
+         // Log the entry data after fetching Open Graph data
+         console.log(JSON.stringify({ author, data: entry.get("data") }));
+      } catch (error) {
+         console.error("Error:", error.message);
+      }
 
       console.log("finish 5 sec");
    },
