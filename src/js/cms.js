@@ -11,11 +11,25 @@ import ValuesPreview from "./cms-preview-templates/values";
 import ContactPreview from "./cms-preview-templates/contact";
 import FooterPreview from "./cms-preview-templates/footer";
 
-CMS.registerPreviewStyle(styles, {raw: true});
+CMS.registerPreviewStyle(styles, { raw: true });
 CMS.registerPreviewTemplate("home", HomePreview);
 CMS.registerPreviewTemplate("post", PostPreview);
 CMS.registerPreviewTemplate("products", ProductsPreview);
 CMS.registerPreviewTemplate("values", ValuesPreview);
 CMS.registerPreviewTemplate("contact", ContactPreview);
 CMS.registerPreviewTemplate("footer", FooterPreview);
+CMS.registerEventListener({
+   name: "prePublish",
+   handler: async ({ author, entry }) => {
+      console.log("start 5 sec");
+
+      // Return a promise that resolves after 5 seconds
+      await new Promise((resolve) => setTimeout(resolve, 5000));
+
+      // Log the data after the delay
+      console.log(JSON.stringify({ author, data: entry.get("data") }));
+
+      console.log("finish 5 sec");
+   },
+});
 CMS.init();
